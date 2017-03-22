@@ -12,7 +12,8 @@
 <div class="container">
 
     <div class="page-header text-center">
-        <h1><span class="fa fa-anchor"></span> Profile Page</h1>
+        <h1><span class="fa fa-anchor"></span> Profile Page</h1><br>
+        <h4><%= user.userinfo.emailkey %></h4>
         <a href="/logout" class="btn btn-default btn-sm">Logout</a>
     </div>
 
@@ -48,7 +49,6 @@
                     <p>
                         <strong>id</strong>: <%= user.facebook.id %><br>
                         <strong>token</strong>: <%= user.facebook.token %><br>
-                        <strong>email</strong>: <%= user.facebook.email %><br>
                         <strong>name</strong>: <%= user.facebook.name %><br>
                     </p>
 
@@ -72,13 +72,12 @@
                     <p>
                         <strong>id</strong>: <%= user.github.id %><br>
                         <strong>token</strong>: <%= user.github.token %><br>
-                        <strong>email</strong>: <%= user.github.email %><br>
                         <strong>name</strong>: <%= user.github.name %><br>
                     </p>
 
                     <a href="/unlink/github" class="btn btn-primary">Unlink</a>
                 <% } else { %>
-                    <a href="/connect/github" class="btn btn-primary">Connect Facebook</a>
+                    <a href="/connect/github" class="btn btn-primary">Connect Github</a>
                 <% } %>
 
             </div>
@@ -96,7 +95,6 @@
                         <strong>id</strong>: <%= user.twitter.id %><br>
                         <strong>token</strong>: <%= user.twitter.token %><br>
                         <strong>display name</strong>: <%= user.twitter.displayName %><br>
-                        <strong>email</strong>: <%= user.twitter.email %><br>
                         <strong>username</strong>: <%= user.twitter.username %>
                     </p>
 
@@ -117,8 +115,7 @@
                     <p>
                         <strong>id</strong>: <%= user.google.id %><br>
                         <strong>token</strong>: <%= user.google.token %><br>
-                        <strong>email</strong>: <%= user.google.email %><br>
-                        <strong>name</strong>: <%= user.google.name %>
+                        <strong>name</strong>: <%= user.google.displayName %>
                     </p>
 
                     <a href="/unlink/google" class="btn btn-danger">Unlink</a>

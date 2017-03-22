@@ -4,7 +4,6 @@
 // get all the tools we need
 var express  = require('express');
 var app      = express();
-var port     = process.env.PORT || 7080;
 var mongoose = require('mongoose');
 var passport = require('passport');
 var flash    = require('connect-flash');
@@ -16,6 +15,8 @@ var session      = require('express-session');
 var env = require('./env.json')
 var cfg= env[process.env.NODE_ENV||'development']
 var configDB = cfg.db;
+var port     = cfg.port.express;
+
 
 // configuration ===============================================================
 mongoose.connect(configDB.url); // connect to our database

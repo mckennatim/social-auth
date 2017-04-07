@@ -10,10 +10,10 @@ var cfg= env[process.env.NODE_ENV||'development']
 var secret = cfg.jwt.secret
 var exp = cfg.jwt.exp
 
-var httpLoc = 'http://localhost:' + cfg.port.express
+var httpLoc = 'http://localhost:' + cfg.port.express 
 describe('superagent:', function() {
 	it('GET / should be running', function(done) {
-		superagent.get(httpLoc)
+		superagent.get(httpLoc+ '/spa/duck')
 			.end(function(e, res) {
 				console.log(res.type)
 				expect(e).to.eql(null)
@@ -21,4 +21,19 @@ describe('superagent:', function() {
 				done()
 			})
 	})
+	// it('POST / params and body', function(done) {
+	// 	superagent
+	// 		.post(httpLoc+'/spa/rxasred')
+	// 		.send({
+	// 				spaURL: 'http://127.0.0.1/sbdev0/xtest/rxasred-navigo-react/dist/#/',
+	// 				apiURL: 'http://127.0.0.1:3005/api'
+	// 			})
+	// 		.end(function(e, res) {
+	// 			console.log(res.type)
+	// 			console.log(res.body)
+	// 			expect(e).to.eql(null)
+	// 			expect(res.type).to.be('text/html')
+	// 			done()
+	// 		})
+	// })	
 })

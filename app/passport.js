@@ -5,14 +5,11 @@ var TwitterStrategy  = require('passport-twitter').Strategy;
 var GithubStrategy  = require('passport-github').Strategy;
 var GoogleStrategy   = require('passport-google-oauth').OAuth2Strategy;
 var cons = require('tracer').console();
-
-// load up the user model
-var User       = require('../app/models/user');
-
-// load the auth variables
+var User       = require('../app/models').moUser;
 var env = require('../env.json')
 var cfg= env[process.env.NODE_ENV||'development']
 var configAuth = cfg.auth; 
+var mf = require('./funcs')
 
 module.exports = function(passport) {
 
@@ -131,19 +128,17 @@ module.exports = function(passport) {
 	var fbStrategy = configAuth.facebookAuth;
 	fbStrategy.passReqToCallback = true;  // allows us to pass in the req from our route (lets us check if a user is logged in or not)
 	passport.use(new FacebookStrategy(fbStrategy,
-		function(req, token, refreshToken, profile, done) {
+			function(req, token, refreshToken, profile, done) {
+		
 			var email = (profile.emails[0].value || '').toLowerCase()
-			console.log(email)
 			process.nextTick(function() {
-				cons.log(req.user)
+				var appid = mf.getCurrApp();
+				cons.log(appid)
 				// check if the user is already logged in
 				if (!req.user || !req.user.facebook) {
 					User.findOne({ 'userinfo.emailkey' : email }, function(err, user) {
-						console.log(user)
-						console.log(err)
 						if (err) return done(err);
 						if (user) {
-							cons.log(user)
 							if (!user.facebook) { //add a new facebook user
 								user.facebook.id = profile.id
 								user.facebook.token = token;
@@ -263,8 +258,8 @@ module.exports = function(passport) {
 				// check if the user is already logged in
 				if (!req.user || !req.user.twitter) {
 					User.findOne({ 'userinfo.emailkey' : email }, function(err, user) {
-						console.log(user)
-						console.log(err)
+						cons.log(user)
+						cons.log(err)
 						if (err) return done(err);
 						if (user) {
 							cons.log(user)

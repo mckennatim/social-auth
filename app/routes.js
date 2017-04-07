@@ -1,17 +1,36 @@
-module.exports = function(app, passport) {
+var cons = require('tracer').console();
+var User       = require('../app/models').moUser;
+var AppInfo       = require('../app/models').moApp;
+var mf = require('./funcs')
+var appInfo 
 
+
+module.exports = function(app, passport) {
 // normal routes ===============================================================
 
-    // show the home page (will also have our login links)
     app.get('/', function(req, res) {
         res.render('index.ejs');
+    });
+    app.get('/spa/:appid/:apiURL', function(req, res) {
+        cons.log(req.params)
+        appInfo ={
+            appId: req.params.appid,
+            spaURL: req.headers.referer,
+            apiURL: req.params.apiURL
+        }
+        mf.upsertSPAinfo(appInfo)
+        res.render('index.ejs',appInfo);
     });
 
     // PROFILE SECTION =========================
     app.get('/profile', isLoggedIn, function(req, res) {
-        res.render('profile.ejs', {
-            user : req.user
-        });
+        AppInfo.findOne({appId: mf.getCurrApp()}, function(err,result){
+            console.log(result.spaURL)
+            res.redirect(result.spaURL+'#registered');
+        })  
+        // res.render('profile.ejs', {
+        //     user : req.user
+        // });
     });
 
     // LOGOUT ==============================
@@ -52,21 +71,25 @@ module.exports = function(app, passport) {
         }));
 
     // facebook -------------------------------
-
-        // send to facebook to do the authentication
-        app.get('/auth/facebook', passport.authenticate('facebook', { scope : 'email' }));
-
         // handle the callback after facebook has authenticated the user
-        app.get('/auth/facebook/callback',
+        app.get('/auth/facebook/callback', function(req,res,next){
             passport.authenticate('facebook', {
                 successRedirect : '/profile',
                 failureRedirect : '/'
-            }));
+            })(req,res,next);
+        });
+
+        // send to facebook to do the authentication
+        app.get('/auth/facebook/:appId', function(req,res,next){
+            mf.setCurrApp(req.params.appId)
+            passport.authenticate(
+                'facebook', { scope : 'email' }
+            )(req,res,next);
+        });
+
+
 
     // github -------------------------------
-
-        // send to github to do the authentication
-        app.get('/auth/github', passport.authenticate('github', { scope : 'email' }));
 
         // handle the callback after github has authenticated the user
         app.get('/auth/github/callback',
@@ -75,10 +98,15 @@ module.exports = function(app, passport) {
                 failureRedirect : '/'
             }));
 
-    // twitter --------------------------------
+        // send to github to do the authentication
+        app.get('/auth/github/:appId', function(req,res,next){
+            mf.setCurrApp(req.params.appId)
+            passport.authenticate(
+                'github', { scope : 'email' }
+            )(req,res,next);
+        });
 
-        // send to twitter to do the authentication
-        app.get('/auth/twitter', passport.authenticate('twitter', { scope : 'email' }));
+    // twitter --------------------------------
 
         // handle the callback after twitter has authenticated the user
         app.get('/auth/twitter/callback',
@@ -86,12 +114,17 @@ module.exports = function(app, passport) {
                 successRedirect : '/profile',
                 failureRedirect : '/'
             }));
+        // send to twitter to do the authentication
+        app.get('/auth/twitter/:appId', function(req,res,next){
+            mf.setCurrApp(req.params.appId)
+            passport.authenticate(
+                'twitter', { scope : 'email' }
+            )(req,res,next);
+        });
+
 
 
     // google ---------------------------------
-
-        // send to google to do the authentication
-        app.get('/auth/google', passport.authenticate('google', { scope : ['profile', 'email'] }));
 
         // the callback after google has authenticated the user
         app.get('/auth/google/callback',
@@ -99,6 +132,14 @@ module.exports = function(app, passport) {
                 successRedirect : '/profile',
                 failureRedirect : '/'
             }));
+        // send to google to do the authentication
+        app.get('/auth/google/:appId', function(req,res,next){
+            mf.setCurrApp(req.params.appId)
+            passport.authenticate(
+                'google', { scope : ['profile', 'email'] }
+            )(req,res,next);
+        });
+
 
 // =============================================================================
 // AUTHORIZE (ALREADY LOGGED IN / CONNECTING OTHER SOCIAL ACCOUNT) =============
@@ -223,6 +264,11 @@ module.exports = function(app, passport) {
     });    
     app.get('/terms',function(req, res) {
         res.render('terms.ejs')
+    });    
+
+    app.get('/redirect',function(req, res) {
+        console.log('in /redirect')
+        res.redirect('https://cascada.sitebuilt.net')
     });    
 
 };

@@ -1,6 +1,7 @@
 # social-auth
 # tags
-
+## 04-local
+local is done and handles appId correctly
 ## 03-redirect-to-from-app
 If multiple people were registering at the saem time it could fuck up
 ### question - How to pass an additional parameter to passport.authenticate
